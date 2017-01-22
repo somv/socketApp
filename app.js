@@ -6,10 +6,15 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
-var config = require('./routes/config');
 var users = require('./routes/users');
 
 var app = express();
+
+// config variables
+app.locals.blockingTime = 100;
+app.locals.minPlayer = 2;
+app.locals.maxPlayer = 10;
+app.locals.players = 10;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,7 +28,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/config', config);
 app.use('/users', users);
 
 /// catch 404 and forwarding to error handler

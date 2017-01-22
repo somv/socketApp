@@ -2,6 +2,7 @@
  * Created by somveer on 21/1/17.
  */
 $(document).ready(function() {
+    $('.modal').modal();
     var socket = io.connect('http://localhost:3000');
     var userForm = $('#userForm');
     var userName = $('#userName');
@@ -9,8 +10,10 @@ $(document).ready(function() {
     var playerColor = $('#player-color');
     var playerScore = $('#player-score');
     var mainBody = $('#home-page-body');
-    var createNew = $('#createButton');
-    var blockingTime = 100;
+    var blockingTime = parseInt($('#blockingTime').html());
+    var createNewGameForm = $('#createNewGameForm');
+    var playerForm = $('#playerForm');
+    var playerInfo = $('#playerInfo');
     mainBody.css('display', 'none');
     var backgroundColor = "white";
 
@@ -54,25 +57,36 @@ $(document).ready(function() {
         return html;
     };
 
-    createNew.click(function () {
-       var roomNo = Math.ceil(Math.random()*100000000);
-       var html = createNewGame(roomNo, 3, 3);
-       socket.emit('create new game', html);
-    });
-
     socket.on('append game', function (html) {
         $('#home-page-body').append(html);
     });
 
     userForm.submit(function (e) {
         e.preventDefault();
+        if(userName.val() == '') {
+            alert("Please enter a name");
+            return;
+        }
         socket.emit('new player', userName.val());
         mainBody.css('display', 'block');
+        playerForm.css('display', 'none');
+        playerInfo.css('display', 'block');
+    });
+
+    createNewGameForm.submit(function (e) {
+       e.preventDefault();
+       var m = 4, n=4;
+       if( $(this).find('input[name="m"]').val() != "") m = parseInt($(this).find('input[name="m"]').val());
+       if( $(this).find('input[name="n"]').val() != "") n = parseInt($(this).find('input[name="n"]').val());
+       var roomNo = Math.ceil(Math.random()*100000000);
+       var html = createNewGame(roomNo, m, n);
+       socket.emit('create new game', html);
     });
 
     socket.on('add player', function (options) {
         playerName.append(options.userName);
         playerColor.css('background-color', options.color);
+
         backgroundColor = options.color;
         userName.val('');
     });
@@ -80,8 +94,6 @@ $(document).ready(function() {
     // When player clicks a cell
     $('#home-page-body').on('click','.board-cell', function () {
         var roomId = $(this).closest('.card').attr('id');
-        console.log("Cell was clicked from room number: "+ roomId);
-        console.log($(this).find('.btn-floating').css("background-color"));
         if($(this).find('.btn-floating').css("background-color") == 'rgb(255, 255, 255)') {
             $(this).find('.btn-floating').css("background-color", backgroundColor);
             var cellId = "#" + $(this).children('.btn-floating').attr('id');
@@ -103,23 +115,18 @@ $(document).ready(function() {
     socket.on('change color', function (options) {
         var roomId = '#'+options.roomId;
         $(roomId).find(options.cellId).css("background-color", options.color);
-        console.log("change color");
-        console.log(options);
         var userColor = options.color.replace(/\s/g, '');
-        console.log("userColor "+userColor);
         var count = 0;
         var colors=[];
         var uniqueColors = [];
         var frequency = [];
         for(var i=0;i<$(roomId).find('.btn-floating').length;i++) {
-            console.log($(roomId).find('.btn-floating')[i].style.backgroundColor);
             var buttonColor = $(roomId).find('.btn-floating')[i].style.backgroundColor;
             if(buttonColor!= "") {
                 colors.push(buttonColor);
                 if(uniqueColors.indexOf(buttonColor)<0) uniqueColors.push(buttonColor);
             }
             buttonColor = buttonColor.replace(/\s/g, '');
-            console.log(userColor);
             if( buttonColor == userColor) count++;
         };
         for(var i=0;i<uniqueColors.length;i++){
@@ -129,11 +136,6 @@ $(document).ready(function() {
                 if(uniqueColors[i]==colors[j]) frequency[i]++;
             }
         }
-        console.log("total colors availabe are");
-        console.log(colors);
-        console.log("total unique colors availabe are");
-        console.log(uniqueColors);
-        console.log(frequency);
         var max = 0;
         var winner = 0;
         for(var i=0;i<frequency.length;i++){
@@ -142,8 +144,6 @@ $(document).ready(function() {
                 winner = i;
             }
         }
-        console.log("max score is "+max);
-        console.log("count is now "+count);
         socket.emit('score calculate', options, count, max);
         socket.emit('max score calculate', options, max);
         if (colors.length == $(roomId).find('.btn-floating').length) {

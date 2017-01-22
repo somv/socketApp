@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col s12 m6">
+    <div class="col s12 m12" id="playerForm">
         <div class="card grey lighten-4">
             <div class="card-content black-text">
                 <div class="row">
@@ -14,21 +14,49 @@
                             </div>
                         </div>
                     </form>
-                    <button class="btn" id="createButton">create a new game</button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col s12 m6">
+    <div class="col s12 m12" id="playerInfo" style="display: none">
         <div class="card grey lighten-4">
             <div class="card-content black-text">
-                <div class="row">Player info</div>
-                <div class="divider"></div>
-                <strong style="margin-right: 20px;">Name: </strong><span id="player-name"></span><br>
-                <strong style="margin-right: 20px;">Score: </strong><span id="player-score"></span><br>
-                <strong style="margin-right: 20px;">Color: </strong><button class="btn" id="player-color"></button>
+                <div class="row">
+                    <button class="btn white black-text" disabled>Player info</button>
+                    <a style="float: right" class="btn" href="#createGame">create a new game</a>
+                </div>
+                <div class="row">
+                    <strong style="margin-right: 20px;">Name: </strong><span id="player-name"></span><br>
+                    <strong style="margin-right: 20px;">Color: </strong><button class="btn-floating btn-large" id="player-color" disabled></button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 <div class="divider"></div>
+
+<div id="createGame" class="modal">
+    <div class="modal-content">
+
+
+        <div class="row">
+        <form class="col s12" id="createNewGameForm">
+            <div class="row">
+                <div class="input-field col s6">
+                    <input placeholder="# of columns" min="2" max="10" name="m" type="number">
+                </div>
+                <div class="input-field col s6">
+                    <input placeholder="# of rows" min="2" max="10" name="n" type="number">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s6">
+                    <input class="btn modal-close" type="submit" value="submit">
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    </div>
+</div>

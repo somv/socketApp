@@ -44,7 +44,6 @@ module.exports = function(io) {
                 socket.join(options.roomId);
                 rooms.push(options.roomId);
             };
-            console.log("rooms");console.log(rooms);
         });
 
         // Create new game
