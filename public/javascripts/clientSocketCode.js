@@ -37,8 +37,8 @@ $(document).ready(function() {
         }
         html+= '</div>';
 
-        html+= '</div>';//added later
-        html += '<div class="col m4 l4">'; // added later
+        html+= '</div>';
+        html += '<div class="col m4 l4">';
         html += '<div class="row" id="score">Your Score ';
         html += '<span id="playerScore">0</span>';
         html += '</div>';
