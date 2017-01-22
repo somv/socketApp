@@ -6,8 +6,6 @@ var Board = require('./board.js');
 var functions = require('./functions.js');
 var connections = [];
 var rooms = [];
-var roomSocketMapping = [];
-var scoreSocketMapping = [];
 module.exports = function(io) {
     var app = require('express');
     var router = app.Router();
@@ -34,29 +32,19 @@ module.exports = function(io) {
 
         // cell clicked
         socket.on('cell clicked', function(options) {
-            console.log("options");console.log(options);
             io.emit('change color', options);
-            io.to(socket.id).emit('update score', options);
             io.sockets.emit('block game', options);
         });
 
         // Join room
         socket.on('join room', function(options){
-            var scoreCard = {
-                socketId : options.socketId,
-                roomId : options.roomId,
-                maxScore : 0,
-                score : 0
-            };
             if(rooms.indexOf(options.roomId) < 0) {
-                rooms.push(options.roomId);
                 console.log("rooms length %s", rooms.length);
                 console.log("the socket: %s has joined room number: %s", options.socketId, options.roomId);
                 socket.join(options.roomId);
+                rooms.push(options.roomId);
             };
-            if(rooms.indexOf(options.roomId) > 0) {
-
-            }
+            console.log("rooms");console.log(rooms);
         });
 
         // Create new game
@@ -66,8 +54,18 @@ module.exports = function(io) {
         });
 
         // Score calculate
-        socket.on('score calculate', function (options) {
+        socket.on('score calculate', function (options, count, max) {
+            io.to(options.socketId).emit('update score', options, count, max);
+        });
 
+        // Max score calculate
+        socket.on('max score calculate', function (options, max) {
+            io.emit('update max score', options, max);
+        });
+
+        // Game over
+        socket.on('game over', function (options) {
+            io.emit('update winner', options);
         });
 
     });
